@@ -9,4 +9,7 @@ def git_tag():
 
 
 if __name__ == '__main__':
-    git_tag()
+    # git_tag()
+    path = os.path.dirname(os.path.realpath(__file__))
+    full_path = os.path.join(path, "answer", "123.json")
+    print(full_path)
