@@ -22,7 +22,6 @@ from utils.utils import dateToJsonFile, is_exist_answer_file, jsonFileToDate
 
 # 定义任务类型映射
 LEAF_TYPE_MAP = {
-    0: "视频",
     3: "公告",
     4: "讨论",
     6: "测验/练习",
@@ -150,116 +149,6 @@ def _create_heartbeat_payload(
         })
     return heart_data
 
-
-def _handle_video(task_state: TaskState, rain: RainAPI, course_id: str, is_export_answer):
-    """
-    处理单个视频观看任务的完整业务逻辑（优化版）。
-    该函数负责获取视频进度、循环发送心跳以模拟观看，
-    并实时更新UI，直到视频被标记为完成。
-
-    :param task_state: 任务状态对象，包含任务信息并用于UI更新。
-    :param rain: RainAPI的实例，用于与服务器交互。
-    :param course_id: 课程ID (cid)。
-    """
-    if not is_export_answer:
-
-        task_state.update_status("处理中...", "开始处理视频任务...")
-
-        # --- 2. 提取任务参数 ---
-        task_info = task_state.task_info
-        video_id = str(task_info.get('id'))
-        video_name = task_info.get('name', f'未知视频(ID:{video_id})')
-        classroom_id = course_id
-        course_sign = rain.get_course_sign(course_id)['data']['course_sign']
-        leaf_info = rain.get_leaf_info(video_id, course_id, course_sign)
-        _course_id = leaf_info['data']['course_id']
-        status = rain.get_status(video_id, course_id)
-
-        user_id = leaf_info['data']['user_id']
-
-        is_look = status['data']
-        task_state.update_status("已完成", f"{is_look}")
-        if is_look:
-            task_state.update_status("已完成", "跳过。")
-            return
-
-        task_state.update_status("处理中...", f"获取 id")
-
-        sku_id = leaf_info['data']['sku_id']
-
-        if not all([video_id, classroom_id, sku_id]):
-            task_state.update_status("失败", "[red]任务信息不完整 (缺少 video_id, classroom_id 或 skuid)。[/red]")
-            return
-
-        task_state.update_status("处理中...", f"正在处理: [bold cyan]'{video_name}'[/bold cyan]")
-
-        # --- 3. 获取初始进度并检查是否已完成 ---
-        initial_progress = rain.get_video_progress(video_id, _course_id, classroom_id, user_id)
-        pretty_leaf_info = json.dumps(initial_progress, indent=2, ensure_ascii=False)
-        task_state.update_status("处理中", f"{pretty_leaf_info}")
-
-        if not (initial_progress and initial_progress.get("data") and video_id in initial_progress["data"]):
-            task_state.update_status("失败", f"[red]无法获取 '{video_name}' 的初始视频进度。[/red]")
-        try:
-            video_info = initial_progress["data"][video_id]
-        except Exception as e:
-            video_info = {}
-
-        progress_rate = video_info.get("rate", 0.0)
-        video_frame = video_info.get("watch_length", 0)
-        task_state.update_status("处理中...", f"初始进度 [bold]{progress_rate * 100:.2f}%[/bold]，开始自动学习...")
-
-        # --- 4. 循环发送心跳，直到满足完成条件 ---
-        while progress_rate < VIDEO_COMPLETION_THRESHOLD:
-            # a. 构造心跳数据
-            heartbeat_data = _create_heartbeat_payload(
-                rain, course_id, video_id, classroom_id, sku_id,
-                video_frame, LEARNING_RATE, HEARTBEAT_BATCH_SIZE, user_id
-            )
-
-            # 更新下一次循环的起始 video_frame
-            video_frame += LEARNING_RATE * HEARTBEAT_BATCH_SIZE
-
-            # b. 发送心跳
-            response = rain.send_heartbeat(heartbeat_data)
-
-            # c. 处理频率限制
-            if response and response.text:
-                try:
-                    delay_match = re.search(r"Expected available in (.+?) second.", response.text)
-                    if delay_match:
-                        delay_time = float(delay_match.group(1).strip())
-                        task_state.update_status("处理中...",
-                                                 f"[yellow]触发频率限制，等待 {delay_time:.2f} 秒...[/yellow]")
-                        time.sleep(delay_time + 0.5)
-                except (AttributeError, TypeError, ValueError):
-                    # 如果解析失败，不中断流程，按正常节奏继续
-                    pass
-
-            # d. 获取并更新最新进度
-            current_progress_data = rain.get_video_progress(video_id, course_id, classroom_id, user_id)
-
-            if not (current_progress_data and current_progress_data.get("data") and video_id in current_progress_data[
-                "data"]):
-                task_state.update_status("处理中...",
-                                         f"[yellow]未能获取最新进度，{RETRY_SLEEP_INTERVAL}秒后重试...[/yellow]")
-                time.sleep(RETRY_SLEEP_INTERVAL)
-                continue  # 跳过本次循环的剩余部分，直接进入下一次尝试
-
-            latest_rate = current_progress_data["data"][video_id].get("rate")
-
-            if latest_rate is None:
-                task_state.update_status("失败", f"[red]无法从API响应中解析 '{video_name}' 的进度。[/red]")
-                return
-
-            progress_rate = latest_rate
-            task_state.update_status("处理中...", f"学习进度: [bold green]{progress_rate * 100:.2f}%[/bold green]")
-            time.sleep(LOOP_SLEEP_INTERVAL)
-
-        # --- 5. 任务完成 ---
-        task_state.update_status("已完成", f"视频 '{video_name}' 学习完成！")
-    else:
-        task_state.update_status("已跳过", f"该类型没有可导出的答案")
 
 
 def get_answer(problem_id, answer):
@@ -429,7 +318,7 @@ def _handle_default(task_state: TaskState, rain: RainAPI, course_id, is_export_a
 
 def get_task_handler(leaf_type: int):
     """根据任务类型返回对应的处理函数。"""
-    handlers = {0: _handle_video, 3: _handle_announcement, 4: _handle_discussion, 6: _handle_quiz}
+    handlers = { 3: _handle_announcement, 4: _handle_discussion, 6: _handle_quiz}
     return handlers.get(leaf_type, _handle_default)
 
 

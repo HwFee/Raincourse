@@ -11,7 +11,7 @@ from utils.utils import jsonFileToDate
 
 
 def logo(console: Console) -> None:
-    console.print(f"雨课堂自动答题（刷课）工具 ,version = {__VERSION__}", style="bold green")
+    console.print(f"长江雨课堂自动答题工具 ,version = {__VERSION__}", style="bold green")
 
 
 def show_menu(console: Console) -> None:
@@ -24,13 +24,11 @@ def show_menu(console: Console) -> None:
             Text("3.导出试题", justify="center", style="bold yellow"),
             Text("4.自动答题", justify="center", style="bold yellow"),
             Text("5.答案文件", justify="center", style="bold yellow"),
-            Text("6.自动刷课", justify="center", style="bold yellow"),
-            Text("7.导出数据", justify="center", style="bold yellow"),
-            Text("8.退出登录", justify="center", style="bold yellow"),
-            Text("9.切换用户", justify="center", style="bold yellow"),
-            Text("10.导出excel", justify="center", style="bold yellow"),
-            Text("11.自动刷课(浏览图文，视频，讨论，课后作业)", justify="center", style="bold yellow"),
-            Text("12.导出课后作业答案", justify="center", style="bold yellow"),
+            Text("6.导出数据", justify="center", style="bold yellow"),
+            Text("7.退出登录", justify="center", style="bold yellow"),
+            Text("8.切换用户", justify="center", style="bold yellow"),
+            Text("9.导出excel", justify="center", style="bold yellow"),
+            Text("A.AI答题", justify="center", style="bold green"),
         ),
         style="bold green",
         width=120,
@@ -167,28 +165,6 @@ def show_all_answer_file(console: Console) -> None:
     console.print(
         Panel(
             title="[blue]作业文件列表[/blue]",
-            renderable=tb,
-            style="bold green",
-        )
-    )
-
-
-def show_ppt(res, console: Console) -> None:
-    tb = Table("id", "ppt_id", "ppt名称", "ppt数量", border_style="blue", width=116)
-    i = 1
-    for item in res:
-        tb.add_row(
-            f"[yellow]{str(i)}[/yellow]",
-            f"[green]{str(item['courseware_id'])}[/green]",
-            item['title'],
-            str(item['count']),
-            style="bold yellow"
-        )
-        i = i + 1
-
-    console.print(
-        Panel(
-            title="[blue]课程列表（ppt）[/blue]",
             renderable=tb,
             style="bold green",
         )

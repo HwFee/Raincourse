@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# 虚拟环境
+venv/
+env/
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 日志和缓存
+logs/
+*.log
+
+# 用户数据（隐私）
+user/*.json
+!user/.gitkeep
+
+# 答案文件
+answer/*.json
+!answer/.gitkeep
+
+# 导出文件
+exports/*.json
+!exports/.gitkeep
+
+# API配置文件
+config/api_configs.json
+
+# 测试文件
+test*.py
+debug*.py
+
+# 临时文件
+*.tmp
+*.bak
+*.cache
+
+# PyInstaller
+*.manifest
+*.spec.backup
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini

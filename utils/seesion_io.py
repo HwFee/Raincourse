@@ -6,6 +6,11 @@ import requests
 
 class SessionManager:
     @staticmethod
+    def get_base_path() -> str:
+        """返回项目根目录，避免因启动目录变化导致找不到会话文件。"""
+        return os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+    @staticmethod
     def export_session(session):
         session_data = {
             'cookies': session.cookies.get_dict(),
@@ -46,8 +51,7 @@ class SessionManager:
     @staticmethod
     def get_full_path(file_path: str, filename: str) -> str:
         """获取完整的文件路径"""
-        # 使用当前工作目录作为基准
-        base_path = os.getcwd()
+        base_path = SessionManager.get_base_path()
         return os.path.join(base_path, file_path, filename)
 
     @staticmethod

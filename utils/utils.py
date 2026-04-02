@@ -2,6 +2,11 @@ import json
 import os
 
 
+def get_project_root() -> str:
+    """返回项目根目录。"""
+    return os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+
 def dateToJsonFile(answer: list, info: dict, file_path: str, file_name: str) -> None:
     """
     将答案写入文件保存为json格式
@@ -17,7 +22,7 @@ def dateToJsonFile(answer: list, info: dict, file_path: str, file_name: str) -> 
     }
     # json.dumps 序列化时对中文默认使用的ascii编码.想输出真正的中文需要指定ensure_ascii=False
     json_data = json.dumps(to_dict, ensure_ascii=False)
-    path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    path = get_project_root()
     path = os.path.join(path, f"{file_path}", f"{file_name}.json")
     # 没有文件夹就创建文件夹
     if not os.path.exists(os.path.dirname(path)):
@@ -27,7 +32,7 @@ def dateToJsonFile(answer: list, info: dict, file_path: str, file_name: str) -> 
 
 
 def jsonFileToDate(file_path: str, file_name: str) -> dict:
-    path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    path = get_project_root()
 
     file = os.path.join(path, f"{file_path}", f"{file_name}")
     with open(file, 'r', encoding="utf-8") as f_:
@@ -37,7 +42,7 @@ def jsonFileToDate(file_path: str, file_name: str) -> dict:
 
 def is_exist_answer_file(file_path: str, work_file_name: str) -> bool:
     answer_files = []
-    dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    dir_path = get_project_root()
     path = os.path.join(dir_path, f"{file_path}")
     for root, dirs, files in os.walk(path):
         answer_files.append(files)
@@ -58,6 +63,7 @@ def get_files_in_directory(directory_path):
     list: 包含文件信息的列表，每个元素是一个字典 {'name': 文件名（不含后缀）}
     """
     try:
+        directory_path = os.path.join(get_project_root(), directory_path)
         if not os.path.exists(directory_path) or not os.path.isdir(directory_path):
             print(f"错误：'{directory_path}' 不是一个有效的目录。")
             return []
@@ -83,7 +89,7 @@ def get_exam_files(directory_name):
           {'name': '文件名（不含后缀）', 'exam_id': '试卷ID', 'exam_name': '试卷名称', 'status': True/False}
     """
     # 获取脚本所在目录的完整路径
-    script_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    script_dir = get_project_root()
     # 构建完整的目录路径
     directory_path = os.path.join(script_dir, directory_name)
 
