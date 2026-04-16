@@ -12,12 +12,12 @@ async function initializeApp() {
     if (appInitialized) return;
 
     if (!window.pywebview || !window.pywebview.api) {
-        console.log('⏳ pywebview API 尚未就绪，等待中...');
+        console.log('<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> pywebview API 尚未就绪，等待中...');
         return;
     }
 
     appInitialized = true;
-    console.log('🚀 应用初始化...');
+    console.log('<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path fill="currentColor" d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"/><path fill="currentColor" d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path fill="currentColor" d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"/></g></svg> 应用初始化...');
     await loadSavedUsers();
     await checkLoginStatus();
     await loadCoursesForAI();
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener('pywebviewready', () => {
-    console.log('✅ pywebviewready');
+    console.log('<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path fill="currentColor" d="M21.801 10A10 10 0 1 1 17 3.335"/><path fill="currentColor" d="m9 11l3 3L22 4"/></g></svg> pywebviewready');
     initializeApp();
 });
 
@@ -303,7 +303,9 @@ async function loadFiles(type) {
             fileList.innerHTML = result.files.map(file => {
                 // 根据文件类型决定按钮文字
                 const buttonText = file.type === 'export' ? '打开' : '导出';
-                const buttonIcon = file.type === 'export' ? '📂' : '📤';
+                const buttonIcon = file.type === 'export'
+                    ? '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>'
+                    : '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v12m5-7l-5-5l-5 5m14 7v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>';
                 
                 return `
                     <div class="file-item">
@@ -330,7 +332,7 @@ async function loadFiles(type) {
 // 登录相关
 async function loadSavedUsers() {
     try {
-        console.log('📋 加载已保存的用户列表...');
+        console.log('<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><rect fill="currentColor" width="8" height="4" x="8" y="2" rx="1" ry="1"/><path fill="currentColor" d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2m4 7h4m-4 5h4m-8-5h.01M8 16h.01"/></g></svg> 加载已保存的用户列表...');
         const users = await pywebview.api.get_saved_users();
         console.log('用户列表:', users);
         
@@ -340,13 +342,13 @@ async function loadSavedUsers() {
             select.innerHTML = '<option value="">请选择用户</option>' +
                 users.map(user => `<option value="${user}">${user}</option>`).join('');
             
-            console.log(`✅ 找到 ${users.length} 个已保存的用户`);
+            console.log('<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path fill="currentColor" d="M21.801 10A10 10 0 1 1 17 3.335"/><path fill="currentColor" d="m9 11l3 3L22 4"/></g></svg> 找到 ' + users.length + ' 个已保存的用户');
         } else {
             select.innerHTML = '<option value="">暂无保存的用户</option>';
-            console.log('⚠️ 没有找到已保存的用户');
+            console.log('<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21.73 18l-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3M12 9v4m0 4h.01"/></svg> 没有找到已保存的用户');
         }
     } catch (error) {
-        console.error('❌ 加载用户列表失败:', error);
+        console.error('<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle fill="currentColor" cx="12" cy="12" r="10"/><path fill="currentColor" d="m15 9l-6 6m0-6l6 6"/></g></svg> 加载用户列表失败:', error);
     }
 }
 
@@ -622,16 +624,16 @@ function renderApiProviders(providers, currentId) {
     const container = document.getElementById('api-provider-list');
     
     const icons = {
-        'minimax_token_plan': '🧩',
-        'minimax_official': '🤖',
-        'openai': '🌐',
-        'anthropic': '🧠',
-        'qwen': '☁️',
-        'deepseek': '🔍',
-        'zhipu': '⚡',
-        'doubao': '🫘',
-        'siliconflow': '🪨',
-        'feishu': '🕊️'
+        'minimax_token_plan': '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16"/></svg>',
+        'minimax_official': '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path fill="currentColor" d="M12 8V4H8"/><rect fill="currentColor" width="16" height="12" x="4" y="8" rx="2"/><path fill="currentColor" d="M2 14h2m16 0h2m-7-1v2m-6-2v2"/></g></svg>',
+        'openai': '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle fill="currentColor" cx="12" cy="12" r="10"/><path fill="currentColor" d="M12 2a14.5 14.5 0 0 0 0 20a14.5 14.5 0 0 0 0-20M2 12h20"/></g></svg>',
+        'anthropic': '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path fill="currentColor" d="M12 18V5m3 8a4.17 4.17 0 0 1-3-4a4.17 4.17 0 0 1-3 4m8.598-6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5"/><path fill="currentColor" d="M17.997 5.125a4 4 0 0 1 2.526 5.77"/><path fill="currentColor" d="M18 18a4 4 0 0 1-2-7.464"/><path fill="currentColor" d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517"/><path fill="currentColor" d="M6 18a4 4 0 0 1-2-7.464"/><path fill="currentColor" d="M6.003 5.125a4 4 0 0 0-2.526 5.77"/></g></svg>',
+        'qwen': '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9"/></svg>',
+        'deepseek': '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path fill="currentColor" d="m21 21l-4.34-4.34"/><circle fill="currentColor" cx="11" cy="11" r="8"/></g></svg>',
+        'zhipu': '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>',
+        'doubao': '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path fill="currentColor" d="M12 20v2m0-20v2m5 16v2m0-20v2M2 12h2m-2 5h2M2 7h2m16 5h2m-2 5h2M20 7h2M7 20v2M7 2v2"/></g><rect fill="currentColor" width="16" height="16" x="4" y="4" rx="2"/><rect fill="currentColor" width="8" height="8" x="8" y="8" rx="1"/></g></svg>',
+        'siliconflow': '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path fill="currentColor" d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path fill="currentColor" d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path fill="currentColor" d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></g></svg>',
+        'feishu': '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1 1zM16 8L2 22m15.5-7H9"/></svg>'
     };
     
     container.innerHTML = providers.map(provider => {
@@ -642,7 +644,7 @@ function renderApiProviders(providers, currentId) {
         return `
             <div class="api-provider-item">
                 <div class="api-provider-info">
-                    <div class="api-provider-icon">${icons[provider.id] || '🔌'}</div>
+                    <div class="api-provider-icon">${icons[provider.id] || '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v12m5-7l-5-5l-5 5m14 7v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>'}</div>
                     <div class="api-provider-details">
                         <h4>${provider.name}</h4>
                         <div class="api-provider-meta">
